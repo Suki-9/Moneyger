@@ -29,47 +29,18 @@ const switchTheme = (theme: 'dark' | 'light') => {
 </template>
 
 <style module lang="scss">
-.group {
-  margin: .4rem .2rem;
-  padding: .5rem;
+@import '@/styles/common.scss';
+
+.group { 
+  @extend .group;
 
   font-size: 1.2rem;
-
-  background-color: var(--card);
-  color: var(--card-foreground);
-
-  border: solid 1px var(--border);
-  border-radius: var(--radius);
-
-  & > *:not(:first-child) {
-    margin-top: .5rem;
-  }
-
-  & > p {
-    display: flex;
-    justify-content: space-between;
-
-    padding: .25em .5em;
-
-    font-size: 1.2em;
-
-    user-select: none;
-
-    background-color: var(--primary);
-    border-radius: var(--radius);
-  }
 
   & > div {
     display: flex;
     flex-direction: column;
 
     padding: .25rem 0;
-
-    user-select: none;
-
-    background-color: var(--accent);
-
-    border-radius: var(--radius);
 
     & > * {
       display: block;
