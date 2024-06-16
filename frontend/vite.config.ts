@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   server: { port: 4000, host: true },
   build: {
-    outDir: '../backend/Public'
+    outDir: '../backend/dist/Public'
   },
   resolve: {
     alias: {
