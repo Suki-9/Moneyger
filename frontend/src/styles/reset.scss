@@ -1,0 +1,65 @@
+.reset-bg {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  border: none;
+}
+
+body, :root {
+  @extend .reset-bg;
+}
+
+// Box
+div {
+  box-sizing: border-box;
+
+  &#app {
+    @extend .reset-bg;
+  }
+}
+
+// text
+p,a,i,h1,h2,h3,h4,h5,h6 {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+
+  color: var(--foreground);
+
+  font-family: "Zen Maru Gothic", sans-serif;
+}
+
+// Form
+input {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  font-family: "Zen Maru Gothic", sans-serif;
+  border: none;
+
+  font-size: 1em;
+  color: var(--foreground);
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  &::placeholder,
+  &:focus::placeholder {
+    position: absolute;
+    top: 0;
+    color: var(--foreground);
+    font-family: "Zen Maru Gothic", sans-serif;
+  }
+
+  &:focus {
+    outline: none;
+    color: var(--foreground);
+    font-family: "Zen Maru Gothic", sans-serif;
+  }
+}
+
+fieldset {
+  margin: 0;
+  color: var(--foreground);
+}

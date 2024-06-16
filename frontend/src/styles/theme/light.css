@@ -1,0 +1,22 @@
+:root > body[theme="light"] {
+  --background:             hsl(262 100% 95%);
+  --foreground:             hsl(262 5% 0%);
+  --card:                   hsl(262 50% 90%);
+  --card-foreground:        hsl(262 5% 10%);
+  --popover:                hsl(262 100% 95%);
+  --popover-foreground:     hsl(262 100% 0%);
+  --primary:                hsl(262 77% 49%);
+  --primary-foreground:     hsl(0 0% 100%);
+  --secondary:              hsl(262 30% 70%);
+  --secondary-foreground:   hsl(0 0% 0%);
+  --muted:                  hsl(224 30% 85%);
+  --muted-foreground:       hsl(262 5% 35%);
+  --accent:                 hsl(224 30% 80%);
+  --accent-foreground:      hsl(262 5% 10%);
+  --destructive:            hsl(0 100% 30%);
+  --destructive-foreground: hsl(262 5% 90%);
+  --border:                 hsl(262 30% 50%);
+  --input:                  hsl(262 30% 18%);
+  --ring:                   hsl(262 77% 49%);
+  --radius: 0.5rem;
+}
