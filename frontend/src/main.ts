@@ -1,7 +1,6 @@
 // Style sheets -------------------------------------------
 import '@/styles/main.scss';
 import '@/styles/reset.scss';
-import '@/styles/variables.scss';
 import '@/styles/theme.scss';
 
 // TS modules ---------------------------------------------
