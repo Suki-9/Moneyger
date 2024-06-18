@@ -3,7 +3,11 @@ import fs from 'fs';
 
 const app = express();
 
-app.use(express.static('dist/Public'));
+app.use(express.static(__dirname + '/Public'));
+
+app.all("*", (req, res) => {
+  res.sendFile(__dirname + '/Public/index.html');
+})
 
 app.listen(8000, () => {
   console.log("Server running at PORT: ", 8000);
