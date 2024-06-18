@@ -1,0 +1,31 @@
+{
+  "name": "moneyger",
+  "short_name": "moneyger",
+  "theme_color": "#631ddd",
+  "background_color": "#fff",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [{
+    "src": "icon-128.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }, {
+    "src": "icon-144.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  }],
+  "screenshots": [
+   {
+     "src": "ss.png",
+      "sizes": "640x320",
+      "type": "image/png",
+      "form_factor": "wide"
+    },  {
+      "src": "ss.png",
+      "sizes": "640x320",
+      "type": "image/png"
+    }
+ ]
+}
