@@ -30,10 +30,17 @@ if (id) {
       date.value = new Date(v.date).toLocaleDateString('sv-SE');
       toggle.value = 0 <= v.value;
     }
+
+    getTags();
   });
 }
 
-const getTags = async () => tags.value = (await db.tags.limit(30).toArray() as Required<TagRecord>[]).map(v => Object.assign( v, { isSelected: false}));
+const getTags = async () => { 
+  const t = id ? (await db.bind.where('logId').equals(id).toArray()).map(v => v.tagId) : [];
+
+  tags.value = (await db.tags.toArray() as Required<TagRecord>[])
+    .map(v => Object.assign(v, { isSelected: t.includes(v.id) }));
+}
 
 const action = async () => {
   if (id) await db.bind.where('logId').equals(id).delete();
@@ -51,13 +58,13 @@ const action = async () => {
       value.value = undefined;
       summary.value = undefined;
       toggle.value = false;
+      tags.value.map(v => v.isSelected = false);
+
       updateDB && ++updateDB.value;
     });
 
   } catch {}
 }
-
-getTags();
 </script>
 
 <template>
