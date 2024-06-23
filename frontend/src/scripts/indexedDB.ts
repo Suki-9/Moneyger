@@ -7,39 +7,50 @@ export interface LogRecord {
   summary?: string;
 }
 
+export interface TagRecord {
+  id?: number;
+  name: string;
+  summary?: string;
+}
+
+export interface BindRecord {
+  id?: number;
+  tagId: NonNullable<TagRecord['id']>;
+  logId: NonNullable<LogRecord['id']>;
+}
+
 export class IndexedDB extends Dexie {
   log!: Table<LogRecord>;
+  tags!: Table<TagRecord>;
+  bind!: Table<BindRecord>;
 
-  constructor() { 
+  constructor() {
     super('Moneyger');
-    this.version(1).stores({
-      log: '++id, date, value, summary'
+    this.version(3).stores({
+      log: '++id, date, value, summary',
+      tags: '++id, name, summary',
+      bind: '++id, tagId, logId',
     });
   }
 
-  async insert(v: LogRecord) {
-    console.log(this);
+  async insert(v: LogRecord): Promise<LogRecord['id'] | undefined> {
     try {
-      await this.log.add(v);
-      return true;
+      return await this.log.add(v);
     } catch (e) {
       console.error(e);
-      return false;
     }
   }
 
-  async update(v: LogRecord) {
+  async update(v: LogRecord): Promise<LogRecord['id'] | undefined> {
     try {
       if (v.id) {
-        await this.log.update(
+        return await this.log.update(
           v.id,
           Object.fromEntries<LogRecord>(Object.entries(v).filter(([k, _]) => k != 'id'))
         );
       } else throw new Error('Invalid parameter. -> id');
-      return true;
     } catch (e) {
       console.error(e);
-      return false;
     }
   }
 

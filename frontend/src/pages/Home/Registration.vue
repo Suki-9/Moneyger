@@ -3,7 +3,7 @@ import TextInput from '@/components/TextInput.vue';
 import DateInput from '@/components/DateInput.vue';
 import Button from '@/components/Button.vue';
 import { inject, ref, Ref } from 'vue';
-import { IndexedDB } from '@/scripts/indexedDB';
+import { IndexedDB, TagRecord } from '@/scripts/indexedDB';
 
 const { id } = defineProps<{
   id?: number;
@@ -16,6 +16,11 @@ const toggle = ref<boolean>(false);
 
 const db = new IndexedDB();
 const updateDB = inject<Ref<number>>('updateDB');
+const tags = ref<{
+  id: number,
+  name: string,
+  isSelected: boolean
+}[]>([]);
 
 if (id) {
   db.log.where('id').equals(id).first().then(v => {
@@ -28,26 +33,33 @@ if (id) {
   });
 }
 
+const getTags = async () => tags.value = (await db.tags.limit(30).toArray() as Required<TagRecord>[]).map(v => Object.assign( v, { isSelected: false}));
 const action = async () => {
   if (value.value && date.value) {
     db[
       id ? 'update' : 'insert'
-    ]({
-      id: id,
+    ](Object.assign(id ? { id } : {}, {
       date: new Date(date.value).getTime(),
       value: value.value * (toggle.value ? 1 : -1),
       summary: summary.value,
-    }).then(r => {
+    })).then(async r => {
       if (r) {
+        if (!id) for (const tag of tags.value.filter(v => v.isSelected)) {
+          await db.bind.add({ tagId: tag.id, logId: r });
+          tag.isSelected = false;
+        };
+
         date.value = new Date().toLocaleDateString('sv-SE');
         value.value = undefined;
         summary.value = undefined;
         toggle.value = false;
-        updateDB && ++updateDB.value
+        updateDB && ++updateDB.value;
       }
     })
   }
 }
+
+getTags();
 </script>
 
 <template>
@@ -58,6 +70,9 @@ const action = async () => {
   </div>
   <TextInput type="number" :avalable-paste="false" v-model:value="value">金額</TextInput>
   <TextInput type="text" :avalable-paste="false" v-model:value="summary">概要</TextInput>
+  <div :class="$style.tags">
+    <Button v-for="tag of tags" @click="tag.isSelected = !tag.isSelected" :type="tag.isSelected ? 'outlined' : 'text'">{{ tag.name }}</Button>
+  </div>
   <div :class="$style.l">
     <Button :action="action" typr="outlined" :class="$style.button">
       <p>
@@ -99,6 +114,19 @@ const action = async () => {
     & > p {
       display: flex;  
     }
+  }
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  & > * {
+    margin-right: .5rem;
+
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
   }
 }
 
