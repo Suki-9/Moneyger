@@ -2,12 +2,12 @@
 import Button from '@/components/Button.vue';
 import BottomSheet from '@/components/BottomSheet.vue';
 import Registration from './Registration.vue';
-import { IndexedDB, LogRecord } from '@/scripts/indexedDB';
+import { IndexedDB, LogRecord, TagRecord } from '@/scripts/indexedDB';
 import { ref, Ref, inject, watch} from 'vue';
 
 const db = new IndexedDB();
 const updateDB = inject<Ref<number>>('updateDB');
-const records = ref<Record<string, (LogRecord & { tags?: string[] })[]>>({});
+const records = ref<Record<string, (LogRecord & { tags?: TagRecord[] })[]>>({});
 const showBottomSheet = ref<boolean>(false);
 const selectedId = ref<number>();
 
@@ -60,7 +60,10 @@ if (updateDB) watch(updateDB, async () => {
     <div v-for="record in records">
       <div>
         <p>¥{{ record.value }}</p>
-        <p v-show="record.summary">{{ record.summary }}{{ record.tags }}</p>
+        <p v-show="record.summary">{{ record.summary }}</p>
+        <p :class="$style.tags" v-show="record.tags?.length">
+          <span v-for="tag of record.tags">{{ tag.name }}</span>
+        </p>
       </div>
       <div>
         <Button :action="() => record.id && (selectedId = record.id, showBottomSheet = true)">
@@ -89,6 +92,24 @@ if (updateDB) watch(updateDB, async () => {
     justify-content: space-between;
 
     padding: .25rem .5rem;
+  }
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  padding: .25em 0;
+
+  & > span {
+    border-radius: var(--radius);
+    border: solid 1px;
+
+    line-height: 1em;
+
+    margin-right: .5em;
+    padding: 0 .5em .2em .5em;
   }
 }
 
