@@ -13,17 +13,15 @@ const tag = {
   selectedId: ref<string>(),
   add: async () => {
     if (tag.newName.value) {
-      await db.tags.add({
-        name: tag.newName.value,
-      });
+      await db.insert('tags', { name: tag.newName.value })
 
       tag.newName.value = void 0;
       tag.get();
     }
   },
   get: async () => tag.list.value = await db.tags.toArray(),
-  update: async () => db.tags.update(selectedId.value, tag.list.value.filter(v => v.id == selectedId.value)[0]),
-  remove: (id: number) => (db.tags.delete(id), tag.get()),
+  update: async () => db.update('tags', tag.list.value.filter(v => v.id == selectedId.value)[0]),
+  remove: (id: number) => (db.drop('tags', id), tag.get()),
 };
 
 tag.get();
