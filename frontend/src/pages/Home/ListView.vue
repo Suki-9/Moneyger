@@ -43,6 +43,18 @@ const remove = async (id: number) => {
   )
 }
 
+const sumToday = () => (records.value[new Date().toLocaleDateString('sv-SE')] ?? []).reduce((a, r) => a + r.value, 0);
+const sumThisMonth = () => {
+  const n = new Date();
+  const y = n.getFullYear();
+  const m = n.getMonth();
+
+  return Object.entries(records.value).reduce((a, [date, v]) => {
+    const _n = new Date(date);
+    return _n.getFullYear() == y && _n.getMonth() == m ? a + v.reduce((a, r) => a + r.value, 0) : a;
+  }, 0);
+}
+
 getRecords();
 
 if (updateDB) watch(updateDB, async () => {
@@ -51,6 +63,25 @@ if (updateDB) watch(updateDB, async () => {
 </script>
 
 <template>
+  <div :class="$style.group">
+    <p>
+      統計
+    </p>
+
+    <M-Divider />
+
+    <p>
+      <span>本日の収支</span>
+      <span>¥{{ sumToday() }}</span>
+    </p>
+
+    <p>
+      <span>今月の収支</span>
+      <span>¥{{ sumThisMonth() }}</span>
+    </p>
+    
+  </div>
+
   <div v-for="[date, records] in Object.entries(records)" :class="$style.group">
     <p>
       <span>{{ date }}</span>
