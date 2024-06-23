@@ -1,20 +1,13 @@
-// Style sheets -------------------------------------------
-import '@/styles/main.scss';
-import '@/styles/reset.scss';
+import '@/styles/style.scss';
 import '@/styles/theme.scss';
 
-// TS modules ---------------------------------------------
 import { createApp, ref } from 'vue';
-
-// Vue plugins --------------------------------------------
-import VITE_env from './plugins/vite_env';
-import router from './plugins/router';
-
-// Vue Components -----------------------------------------
 import App from './App.vue';
 
-document.body.setAttribute('theme', localStorage.getItem('theme') ?? 'light');
 
+const app = createApp(App);
+
+// Init ServiceWorker -------------------------------------
 if ('serviceWorker' in navigator) {
   console.log('service worker is active');
   navigator.serviceWorker.register('/sw.js').then(function (registration) {
@@ -24,11 +17,20 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Set theme ----------------------------------------------
+document.body.setAttribute('theme', localStorage.getItem('theme') ?? 'light');
+
+// Vue plugins --------------------------------------------
+import VITE_env from './plugins/vite_env';
+import router from './plugins/router';
+import global_components from '@/plugins/global_components';
+
+app.use(global_components);
+app.use(VITE_env);
+app.use(router);
+
+// Provide Grobal refval ----------------------------------
 const updateDB = ref<number>(0);
-
-const app = createApp(App);
-
-app.use(router).use(VITE_env);
 
 app.provide('updateDB', updateDB);
 

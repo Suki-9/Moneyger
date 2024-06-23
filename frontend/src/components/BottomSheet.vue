@@ -60,7 +60,6 @@ onUnmounted(() => {
 </template>
 
 <style module lang="scss">
-@import '../styles/common.scss';
 
 .root {
   position: fixed;
@@ -71,13 +70,15 @@ onUnmounted(() => {
 
   width: 100%;
 
+  box-sizing: border-box;
+
   padding: 0.5rem;
   z-index: 900;
 
   overflow: hidden;
 
-  background-color: var(--card);
-  color: var(--card-foreground);
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
 
   border-radius: 7px;
 
@@ -87,15 +88,15 @@ onUnmounted(() => {
   .tip {
     display: block;
 
-    width: 2.4rem;
-    height: .4rem;
+    width: 2.5rem;
+    height: .3rem;
 
     margin: .2rem auto;
     padding: 0;
 
     border-radius: .2rem;
 
-    background-color: var(--card-foreground);
+    background-color: var(--md-sys-color-surface-variant);
   }
 
   .slot {
@@ -114,7 +115,8 @@ onUnmounted(() => {
 
   width: 100%;
   height: 100%;
-  background-color: color-mix(in srgb, var(--muted) 90%, rgba(0, 0, 0, 0));
+
+  background-color: color-mix(in srgb, var(--md-sys-color-on-secondary) 70%, rgba(0, 0, 0, 0));
 }
 
 @keyframes moveIn {

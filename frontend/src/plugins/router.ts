@@ -15,6 +15,16 @@ const router = createRouter({
       }, {
         path: '/config',
         component: () => import('@/pages/Home/Config.vue'),
+        children: [{
+          path: 'tag',
+          component: () => import('@/pages/Config/Tag.vue'),
+        },{
+          path: 'theme',
+          component: () => import('@/pages/Config/Theme.vue'),
+        }, {
+          path: 'database',
+          component: () => import('@/pages/Config/DataBase.vue'),
+        }]
       }]
     },
   ],

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Button from '@/components/Button.vue';
-import BottomSheet from '@/components/BottomSheet.vue';
 import Registration from './Registration.vue';
 import { IndexedDB, LogRecord, TagRecord } from '@/scripts/indexedDB';
 import { ref, Ref, inject, watch} from 'vue';
@@ -57,6 +55,9 @@ if (updateDB) watch(updateDB, async () => {
       <span>{{ date }}</span>
       <span>¥{{ records.reduce<number>((a, r) => a+=r.value, 0) }}</span>
     </p>
+
+    <M-Divider />
+
     <div v-for="record in records">
       <div>
         <p>¥{{ record.value }}</p>
@@ -65,61 +66,73 @@ if (updateDB) watch(updateDB, async () => {
           <span v-for="tag of record.tags">{{ tag.name }}</span>
         </p>
       </div>
+
       <div>
-        <Button :action="() => record.id && (selectedId = record.id, showBottomSheet = true)">
-          <p><span class="material-symbols-outlined">edit</span></p>
-        </Button>
-        <Button :action="() => record.id && remove(record.id)">
-          <p><span class="material-symbols-outlined">delete</span></p>
-        </Button>
+        <M-Button type="text" @click="record.id && (selectedId = record.id, showBottomSheet = true)">
+          <M-Icon name="edit"/>
+        </M-Button>
+        <M-Button type="text" @click="record.id && remove(record.id)">
+          <M-Icon name="delete"/>
+        </M-Button>
       </div>
+
     </div>
+
   </div>
-  <BottomSheet v-model="showBottomSheet" :class="$style.bottomSheet">
-    <Registration :id="selectedId" />
-  </BottomSheet>
+
+  <Registration v-model="showBottomSheet" v-model:id="selectedId" />
 </template>
 
 <style module lang="scss">
-@import '@/styles/common.scss';
+.group {
+  margin: .5rem;
+  padding: .5rem;
 
-.group { 
-  @extend .group;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
 
-  & > div {
+  & > p {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     padding: .25rem .5rem;
   }
-}
 
-.tags {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  & > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-  padding: .25em 0;
+    padding: .5em 0;
 
-  & > span {
-    border-radius: var(--radius);
-    border: solid 1px;
+    &:not(:last-child) {
+      border-bottom: solid 1px var(--md-sys-color-outline-variant);
+    }
 
-    line-height: 1em;
+    & > * {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
 
-    margin-right: .5em;
-    padding: 0 .5em .2em .5em;
-  }
-}
+      &:first-child{
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
 
-.bottomSheet {
-  padding-bottom: 4rem;
+        & > :last-child {
+          display: flex;
 
-  margin: 0;
+          & > span {
+            border-radius: var(--border-radius);
+            border: solid 1px;
 
-  & > * {
-    margin: .4em .2em;
+            padding: 0 .3em .2em .3em;
+            margin-right: .5rem;
+          }
+        }
+      }
+    }
   }
 }
 </style>

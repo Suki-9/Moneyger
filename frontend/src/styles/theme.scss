@@ -1,2 +1,8 @@
-@import './theme/dark.css';
-@import './theme/light.css';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+@import '@/styles/theme/dark-hc.css';
+@import '@/styles/theme/dark-mc.css';
+@import '@/styles/theme/dark.css';
+@import '@/styles/theme/light-hc.css';
+@import '@/styles/theme/light-mc.css';
+@import '@/styles/theme/light.css';
