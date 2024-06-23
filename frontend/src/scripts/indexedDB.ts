@@ -72,9 +72,9 @@ export class IndexedDB extends Dexie {
   }
 
   async drop<T extends 'log' | 'tags' | 'bind'>(table: T, id: number) {
-    this.transaction('readwrite', this[table], () => {
-      if (table == 'log') this.bind.where('logId').equals(id).delete();
-      this[table].delete(id);
+    await this.transaction('readwrite', [this[table], this.bind], async () => {
+      if (table == 'log') await this.bind.where('logId').equals(id).delete();
+      await this[table].delete(id);
     });
   }
 
