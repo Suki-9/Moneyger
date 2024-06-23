@@ -34,29 +34,27 @@ if (id) {
 }
 
 const getTags = async () => tags.value = (await db.tags.limit(30).toArray() as Required<TagRecord>[]).map(v => Object.assign( v, { isSelected: false}));
-const action = async () => {
-  if (value.value && date.value) {
-    db[
-      id ? 'update' : 'insert'
-    ](Object.assign(id ? { id } : {}, {
-      date: new Date(date.value).getTime(),
-      value: value.value * (toggle.value ? 1 : -1),
-      summary: summary.value,
-    })).then(async r => {
-      if (r) {
-        if (!id) for (const tag of tags.value.filter(v => v.isSelected)) {
-          await db.bind.add({ tagId: tag.id, logId: r });
-          tag.isSelected = false;
-        };
 
-        date.value = new Date().toLocaleDateString('sv-SE');
-        value.value = undefined;
-        summary.value = undefined;
-        toggle.value = false;
-        updateDB && ++updateDB.value;
+const action = async () => {
+  if (id) await db.bind.where('logId').equals(id).delete();
+  try {
+    value.value && db[id ? 'update' : 'insert']('log', Object.assign(
+      id ? { id } : {},
+      {
+        date: new Date(date.value).getTime(),
+        value: value.value * (toggle.value ? 1 : -1),
+        summary: summary.value,
+        tags: tags.value.filter(v => v.isSelected).map(v => v.id),
       }
-    })
-  }
+    )).then(_ => {
+      date.value = new Date().toLocaleDateString('sv-SE');
+      value.value = undefined;
+      summary.value = undefined;
+      toggle.value = false;
+      updateDB && ++updateDB.value;
+    });
+
+  } catch {}
 }
 
 getTags();

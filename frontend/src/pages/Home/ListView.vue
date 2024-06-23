@@ -7,26 +7,45 @@ import { ref, Ref, inject, watch} from 'vue';
 
 const db = new IndexedDB();
 const updateDB = inject<Ref<number>>('updateDB');
+const records = ref<Record<string, (LogRecord & { tags?: string[] })[]>>({});
+const showBottomSheet = ref<boolean>(false);
+const selectedId = ref<number>();
 
-const getRecords = async () => (await db.select(50, {
-  key: 'date',
-  type: 'upper',
-})).reduce<Record<string, LogRecord[]>>((a, r) => {
-  const d = new Date(r.date).toLocaleDateString('sv-SE');
-  if (!(d in a)) a[d] = [];
-  a[d].push(r);
-  return a;
-}, {});
+const getRecords = async () =>
+  records.value = (await Promise.all(
+    db.sort(await db.log.limit(50).toArray(), 'date', 'upper')
+      .map(async v =>
+        Object.assign(v, {
+          tags: v.id && await db.tags
+            .where('id')
+            .anyOf(
+              (
+                await db.bind
+                  .where('logId')
+                  .equals(v.id)
+                  .toArray()
+              )
+                .map(v => v.tagId)
+            )
+            .toArray()
+        })
+    ))
+  )
+    .reduce<Record<string, LogRecord[]>>((a, r) => {
+      const d = new Date(r.date).toLocaleDateString('sv-SE');
+      if (!(d in a)) a[d] = [];
+      a[d].push(r);
+      return a;
+    }, {});
 
 const remove = async (id: number) => {
-  db.log.delete(id);
-  records.value = await getRecords();
+  db.drop('log', id).then(
+    _ => getRecords()
+  )
 }
 
-const records = ref<Record<string, LogRecord[]>>(await getRecords());
-const showBottomSheet = ref<boolean>(false);
-const selectedId = ref<number>()
- 
+getRecords();
+
 if (updateDB) watch(updateDB, async () => {
   records.value = await getRecords();
 });
@@ -41,7 +60,7 @@ if (updateDB) watch(updateDB, async () => {
     <div v-for="record in records">
       <div>
         <p>¥{{ record.value }}</p>
-        <p v-show="record.summary">{{ record.summary }}</p>
+        <p v-show="record.summary">{{ record.summary }}{{ record.tags }}</p>
       </div>
       <div>
         <Button :action="() => record.id && (selectedId = record.id, showBottomSheet = true)">

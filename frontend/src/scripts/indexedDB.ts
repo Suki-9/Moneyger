@@ -27,44 +27,65 @@ export class IndexedDB extends Dexie {
   constructor() {
     super('Moneyger');
     this.version(3).stores({
-      log: '++id, date, value, summary',
+      log:  '++id, date, value, summary',
       tags: '++id, name, summary',
       bind: '++id, tagId, logId',
     });
   }
 
-  async insert(v: LogRecord): Promise<LogRecord['id'] | undefined> {
-    try {
-      return await this.log.add(v);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  async insert<T extends 'log' | 'tags' | 'bind', R extends (T extends 'log' ? LogRecord & { tags: NonNullable<TagRecord['id']>[] } : T extends 'tags' ? TagRecord : BindRecord)>(
+    table: T,
+    v: R | R[],
+  ) {
+    if (!Array.isArray(v)) v = [v];
 
-  async update(v: LogRecord): Promise<LogRecord['id'] | undefined> {
-    try {
-      if (v.id) {
-        return await this.log.update(
-          v.id,
-          Object.fromEntries<LogRecord>(Object.entries(v).filter(([k, _]) => k != 'id'))
+    await this.transaction('readwrite', [this[table], this.bind], () => Promise.all(
+      v.map(async _v => {
+        const id = await this[table].add(
+          Object.fromEntries<LogRecord>(Object.entries(_v).filter(([k, _]) => k != 'tags') as any) as any
         );
-      } else throw new Error('Invalid parameter. -> id');
-    } catch (e) {
-      console.error(e);
-    }
+
+        if ('tags' in _v) await Promise.all(_v.tags.map(tagId => this.bind.add({ tagId, logId: id })))
+      })
+    ));
   }
 
-  async select(limit: number = 50, sort?: {
-    key: keyof Pick<LogRecord, 'date' | 'value'>,
-    type: 'upper' | 'lower'
-  }) {
-    const rec = await this.log.limit(limit).toArray();
+  async update<T extends 'log' | 'tags' | 'bind', R extends (T extends 'log' ? LogRecord & { tags: NonNullable<TagRecord['id']>[] } : T extends 'tags' ? TagRecord : BindRecord)>(
+    table: T,
+    v: R | R[],
+  ) {
+    if (!Array.isArray(v)) v = [v];
 
-    return sort
-      ? rec.sort((a, b) => {
-        if (sort.type == 'lower') return a[sort.key] > b[sort.key] ? 1 : -1;
-        else return a[sort.key] < b[sort.key] ? 1 : -1;
+    await this.transaction('readwrite', [this[table], this.bind], () => Promise.all(
+      v.map(async _v => {
+        await this[table].update(
+          _v.id,
+          Object.fromEntries<LogRecord>(Object.entries(_v).filter(([k, _]) => k != 'id' && k != 'tags'))
+        );
+
+        if ('tags' in _v && _v.id) {
+          await this.bind.where('logId').equals(_v.id).delete()
+          await Promise.all(_v.tags.map(tagId => _v.id && this.bind.add({ logId: _v.id, tagId })))
+        }
       })
-      : rec;
+    ));
+  }
+
+  async drop<T extends 'log' | 'tags' | 'bind'>(table: T, id: number) {
+    this.transaction('readwrite', this[table], () => {
+      if (table == 'log') this.bind.where('logId').equals(id).delete();
+      this[table].delete(id);
+    });
+  }
+
+  sort<T extends 'log' | 'tags' | 'bind', R extends (T extends 'log' ? LogRecord : T extends 'tags' ? TagRecord : BindRecord)>(
+    target: R[],
+    key: keyof R,
+    type: 'upper' | 'lower',
+  ): R[] {
+    return target.sort((a, b) => {
+      if (type == 'lower') return a[key] > b[key] ? 1 : -1;
+      else return a[key] < b[key] ? 1 : -1;
+    })
   }
 }
