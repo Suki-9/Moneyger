@@ -3,7 +3,7 @@ import BottomSheet from '@/components/BottomSheet.vue';
 import { inject, ref, Ref, watch } from 'vue';
 import { IndexedDB, TagRecord } from '@/scripts/indexedDB';
 
-const show = defineModel<boolean>({
+const show = defineModel<boolean>('show', {
   required: true
 });
 
@@ -45,24 +45,26 @@ const action = async () => {
         tags: tags.value.filter(v => v.isSelected).map(v => v.id),
       }
     )).then(_ => {
+      if (id.value) {
+        id.value = undefined;
+        show.value = false;
+      }
+
       date.value = new Date().toLocaleDateString('sv-SE');
       value.value = undefined;
       summary.value = undefined;
       toggle.value = false;
       tags.value.map(v => v.isSelected = false);
-      id.value = undefined;
 
       updateDB && ++updateDB.value;
-
-    }).finally(() => id && (show.value = false));
+    });
 
   } catch {}
 }
 
 getTags();
 
-if (id) watch(id, () => {
-  console.log(id.value)
+watch(id, () => {
   if (id.value) db.log.where('id').equals(id.value).first().then(v => {
     if (v) {
       value.value = Math.abs(v.value);

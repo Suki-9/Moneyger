@@ -18,7 +18,7 @@ const showBottomSheet = ref<boolean>(false);
     </M-Button>
   </div>
 
-  <Registration v-model="showBottomSheet"/>
+  <Registration v-model:show="showBottomSheet"/>
 </template>
 
 <style module lang="scss">

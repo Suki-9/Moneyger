@@ -80,7 +80,7 @@ if (updateDB) watch(updateDB, async () => {
 
   </div>
 
-  <Registration v-model="showBottomSheet" v-model:id="selectedId" />
+  <Registration v-model:show="showBottomSheet" v-model:id="selectedId" />
 </template>
 
 <style module lang="scss">
