@@ -44,10 +44,10 @@ onMounted(() => {
   box-shadow: var(--shadow);
   border-radius: var(--border-radius);
 
-  background-color: var(--md-sys-color-primary-container);
+  background-color: var(--md-sys-color-surface-container-low);
 
-  * { color: var(--md-sys-color-on-primary-container); }
-  color: var(--md-sys-color-on-primary-container);
+  * { color: var(--md-sys-color-on-surface); }
+  color: var(--md-sys-color-on-surface);
 }
 
 .bg {

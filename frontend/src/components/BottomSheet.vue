@@ -73,7 +73,7 @@ onUnmounted(() => {
   box-sizing: border-box;
 
   padding: 0.5rem;
-  z-index: 900;
+  z-index: 2000;
 
   overflow: hidden;
 
@@ -108,15 +108,13 @@ onUnmounted(() => {
 
 .bg {
   position: fixed;
-  top: 0;
-  left: 0;
-
-  z-index: 500;
+  z-index: 1800;
 
   width: 100%;
   height: 100%;
 
-  background-color: color-mix(in srgb, var(--md-sys-color-on-secondary) 70%, rgba(0, 0, 0, 0));
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 @keyframes moveIn {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { IndexedDB, TagRecord } from '@/scripts/indexedDB';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const db = new IndexedDB();
 const selectedId = ref<number>();
 const showTagList = ref<boolean>(false);
+const showModal = ref<boolean>(false);
 
 const tag = {
   list: ref<TagRecord[]>([]),
@@ -26,6 +27,8 @@ const tag = {
 };
 
 tag.get();
+
+watch(showModal, () => !showModal.value && (selectedId.value = undefined));
 </script>
 
 <template>
@@ -63,7 +66,7 @@ tag.get();
           <M-Button type="text" v-show="record.id == selectedId" @click="(tag.update(), selectedId = undefined)">
             <M-Icon name="check"/>
           </M-Button>
-          <M-Button type="text" v-show="record.id != selectedId" @click="record.id && tag.remove(record.id)">
+          <M-Button type="text" v-show="record.id != selectedId" @click="record.id && (selectedId = record.id, showModal = true)">
             <M-Icon name="delete"/>
           </M-Button>
         </div>
@@ -72,6 +75,17 @@ tag.get();
     </div>
 
   </div>
+
+  <M-Modal v-model:show="showModal" :class="$style.modal">
+    <h2>
+      <M-Icon name="delete"/><p>記録を削除</p>
+    </h2>
+    <p>削除しますか？</p>
+    <div>
+      <M-Button type="text" @click="showModal = false">Cancel</M-Button>
+      <M-Button type="text" @click="selectedId && (tag.remove(selectedId), showModal = false)">Ok</M-Button>
+    </div>
+  </M-Modal>
 </template>
 
 <style module lang="scss">
@@ -129,50 +143,7 @@ tag.get();
   }
 }
 
-.tag {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-
-  padding: .5em;
-
-  .list {
-    display: flex;
-    flex-direction: column;
-
-    width: 100%;
-
-    .input {
-      border-radius: 0;
-      border: none;
-      border-bottom: solid 1px;
-    }
-
-    & > p {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      font-size: 1rem;
-    }
-
-    & > div {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: .25rem .5rem;
-
-      width: 100%;
-    }
-  }
-
-  & > * {
-    &:not(:last-child) {
-      margin-bottom: .5rem
-    }
-
-    color: var(--card-foreground);
-  }
+.modal {
+  @extend .deleteModal;
 }
 </style>

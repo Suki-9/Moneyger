@@ -7,6 +7,7 @@ const db = new IndexedDB();
 const updateDB = inject<Ref<number>>('updateDB');
 const records = ref<Record<string, (LogRecord & { tags?: TagRecord[] })[]>>({});
 const showBottomSheet = ref<boolean>(false);
+const showModal = ref<boolean>(false);
 const selectedId = ref<number>();
 
 const getRecords = async () =>
@@ -71,7 +72,7 @@ if (updateDB) watch(updateDB, async () => {
         <M-Button type="text" @click="record.id && (selectedId = record.id, showBottomSheet = true)">
           <M-Icon name="edit"/>
         </M-Button>
-        <M-Button type="text" @click="record.id && remove(record.id)">
+        <M-Button type="text" @click="record.id && (selectedId = record.id, showModal = true)">
           <M-Icon name="delete"/>
         </M-Button>
       </div>
@@ -80,10 +81,23 @@ if (updateDB) watch(updateDB, async () => {
 
   </div>
 
+  <M-Modal v-model:show="showModal" :class="$style.modal">
+    <h2>
+      <M-Icon name="delete"/><p>記録を削除</p>
+    </h2>
+    <p>削除しますか？</p>
+    <div>
+      <M-Button type="text" @click="showModal = false">Cancel</M-Button>
+      <M-Button type="text" @click="selectedId && (remove(selectedId), showModal = false)">Ok</M-Button>
+    </div>
+  </M-Modal>
+
   <Registration v-model:show="showBottomSheet" v-model:id="selectedId" />
 </template>
 
 <style module lang="scss">
+@import '@/styles/common.scss';
+
 .group {
   margin: .5rem;
   padding: .5rem;
@@ -134,5 +148,9 @@ if (updateDB) watch(updateDB, async () => {
       }
     }
   }
+}
+
+.modal {
+  @extend .deleteModal;
 }
 </style>
