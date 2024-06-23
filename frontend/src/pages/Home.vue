@@ -7,6 +7,7 @@ import Navigation from '@/pages/Home/Navigation.vue';
   <div :class="$style.root">
     <Haed/>
     <RouterView />
+    <div :class="$style.s"></div>
     <Navigation/>
   </div>
 </template>
@@ -18,6 +19,9 @@ import Navigation from '@/pages/Home/Navigation.vue';
 
   height: 100%;
 
-  .contents {}
+  // TODO 無理やり過ぎ
+  .s {
+    padding-bottom: 4.5rem;
+  }
 }
 </style>
