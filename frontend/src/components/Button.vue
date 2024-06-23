@@ -57,6 +57,7 @@ onUnmounted(() => document.removeEventListener('click', () => {}));
 
   font-family: "Zen Maru Gothic", sans-serif;
   font-size: 1em;
+  color: var(--card-foreground);
   padding: .4em;
 
   width: fit-content;
