@@ -21,7 +21,7 @@ const tag = {
   },
   get: async () => tag.list.value = await db.tags.toArray(),
   update: async () => db.update('tags', tag.list.value.filter(v => v.id == selectedId.value)[0]),
-  remove: (id: number) => (db.drop('tags', id), tag.get()),
+  remove: async (id: number) => (await db.drop('tags', id), tag.get()),
 };
 
 tag.get();
