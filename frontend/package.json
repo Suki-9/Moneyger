@@ -13,6 +13,7 @@
     "@vue/runtime-core": "^3.4.30",
     "dexie": "^4.0.7",
     "sass": "^1.77.6",
+    "v-m3": "github:Suki-9/V-M3",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },

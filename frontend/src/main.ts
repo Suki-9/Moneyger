@@ -23,9 +23,9 @@ document.body.setAttribute('theme', localStorage.getItem('theme') ?? 'light');
 // Vue plugins --------------------------------------------
 import VITE_env from './plugins/vite_env';
 import router from './plugins/router';
-import global_components from '@/plugins/global_components';
+import VueMaterialComponent from 'v-m3';
 
-app.use(global_components);
+app.use(VueMaterialComponent);
 app.use(VITE_env);
 app.use(router);
 
