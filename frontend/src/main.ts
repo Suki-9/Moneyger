@@ -1,7 +1,7 @@
 import '@/styles/style.scss';
 import '@/styles/theme.scss';
 
-import { createApp, ref } from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 
 
@@ -21,17 +21,7 @@ if ('serviceWorker' in navigator) {
 document.body.setAttribute('theme', localStorage.getItem('theme') ?? 'light');
 
 // Vue plugins --------------------------------------------
-import VITE_env from './plugins/vite_env';
-import router from './plugins/router';
-import VueMaterialComponent from 'v-m3';
-
-app.use(VueMaterialComponent);
-app.use(VITE_env);
-app.use(router);
-
-// Provide Grobal refval ----------------------------------
-const updateDB = ref<number>(0);
-
-app.provide('updateDB', updateDB);
+import { installPlugins } from './plugins';
+installPlugins(app);
 
 app.mount('#app');
